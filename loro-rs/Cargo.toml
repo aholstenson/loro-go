@@ -1,0 +1,23 @@
+[package]
+name = "loro-go"
+version = "1.5.0"
+edition = "2021"
+
+[lib]
+name = "loro"
+crate-type = ["cdylib", "staticlib"]
+
+[[bin]]
+name = "uniffi-bindgen-go"
+path = "src/uniffi-bindgen-go.rs"
+
+[dependencies]
+loro-ffi = { git = "https://github.com/loro-dev/loro.git", tag = "loro-ffi@1.5.0" }
+uniffi = { version = "0.28.3" }
+uniffi-bindgen-go = { git = "https://github.com/NordSecurity/uniffi-bindgen-go.git", tag = "v0.3.0+v0.28.3" }
+
+[build-dependencies]
+uniffi = { version = "0.28.3", features = ["build"] }
+
+[features]
+cli = ["uniffi/cli"]
