@@ -1625,8 +1625,8 @@ dependencies = [
 
 [[package]]
 name = "uniffi-bindgen-go"
-version = "0.3.0+v0.28.3"
-source = "git+https://github.com/NordSecurity/uniffi-bindgen-go.git?tag=v0.3.0%2Bv0.28.3#852af927c5508beacce3dc5957dae51e31e3e01f"
+version = "0.4.0+v0.28.3"
+source = "git+https://github.com/NordSecurity/uniffi-bindgen-go.git?tag=v0.4.0%2Bv0.28.3#a083e4aacd15e0748fabc0243008664d0faa7efd"
 dependencies = [
  "anyhow",
  "askama 0.13.1",
