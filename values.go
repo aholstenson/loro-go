@@ -341,11 +341,40 @@ func GetMapValueOfAny(v **ValueOrContainer) (map[string]any, bool) {
 // as an any.
 func GetAnyValue(v **ValueOrContainer) (any, bool) {
 	value, ok := GetValue(v)
-	if !ok {
+	if ok {
+		return GetBasicValueAsAny(value)
+	}
+
+	v0 := *v
+	if v0 == nil {
 		return nil, false
 	}
 
-	return GetBasicValueAsAny(value)
+	if loroCounter := v0.AsLoroCounter(); loroCounter != nil {
+		return loroCounter, true
+	}
+
+	if loroMap := v0.AsLoroMap(); loroMap != nil {
+		return loroMap, true
+	}
+
+	if loroList := v0.AsLoroList(); loroList != nil {
+		return loroList, true
+	}
+
+	if loroMovableList := v0.AsLoroMovableList(); loroMovableList != nil {
+		return loroMovableList, true
+	}
+
+	if loroText := v0.AsLoroText(); loroText != nil {
+		return loroText, true
+	}
+
+	if loroTree := v0.AsLoroTree(); loroTree != nil {
+		return loroTree, true
+	}
+
+	return nil, false
 }
 
 // GetBasicValueAsAny takes a LoroValue and returns the value as an any.
