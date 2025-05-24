@@ -72,9 +72,9 @@ func AsListValue(v []LoroValueLike) LoroValueLike {
 	}
 }
 
-// AsListValueFromVec converts a vector of LoroValue to a LoroValueLike which
+// AsListValueFromValue converts a vector of LoroValue to a LoroValueLike which
 // can be used in most places that expect a value.
-func AsListValueFromVec(v []LoroValue) LoroValueLike {
+func AsListValueFromValue(v []LoroValue) LoroValueLike {
 	return simpleValue{
 		value: LoroValueList{
 			Value: v,
@@ -82,9 +82,9 @@ func AsListValueFromVec(v []LoroValue) LoroValueLike {
 	}
 }
 
-// AsListValueFromVecOfAny converts a vector of any to a LoroValueLike which
+// AsListValueFromAny converts a vector of any to a LoroValueLike which
 // can be used in most places that expect a value.
-func AsListValueFromVecOfAny(v []any) (LoroValueLike, error) {
+func AsListValueFromAny(v []any) (LoroValueLike, error) {
 	values := make([]LoroValue, len(v))
 	for i, value := range v {
 		value, err := AsValue(value)
@@ -95,7 +95,7 @@ func AsListValueFromVecOfAny(v []any) (LoroValueLike, error) {
 		values[i] = value.AsLoroValue()
 	}
 
-	return AsListValueFromVec(values), nil
+	return AsListValueFromValue(values), nil
 }
 
 // AsMapValue converts a map of string to LoroValueLike to a LoroValueLike which
@@ -112,9 +112,9 @@ func AsMapValue(v map[string]LoroValueLike) LoroValueLike {
 	}
 }
 
-// AsMapValueFromVec converts a map of string to LoroValue to a LoroValueLike
+// AsMapValueFromValue converts a map of string to LoroValue to a LoroValueLike
 // which can be used in most places that expect a value.
-func AsMapValueFromVec(v map[string]LoroValue) LoroValueLike {
+func AsMapValueFromValue(v map[string]LoroValue) LoroValueLike {
 	return simpleValue{
 		value: LoroValueMap{
 			Value: v,
@@ -122,9 +122,9 @@ func AsMapValueFromVec(v map[string]LoroValue) LoroValueLike {
 	}
 }
 
-// AsMapValueFromVecOfAny converts a map of string to any to a LoroValueLike
+// AsMapValueFromAny converts a map of string to any to a LoroValueLike
 // which can be used in most places that expect a value.
-func AsMapValueFromVecOfAny(v map[string]any) (LoroValueLike, error) {
+func AsMapValueFromAny(v map[string]any) (LoroValueLike, error) {
 	values := make(map[string]LoroValue)
 
 	for k, v := range v {
@@ -135,7 +135,7 @@ func AsMapValueFromVecOfAny(v map[string]any) (LoroValueLike, error) {
 		values[k] = value.AsLoroValue()
 	}
 
-	return AsMapValueFromVec(values), nil
+	return AsMapValueFromValue(values), nil
 }
 
 // AsValue converts an any to a LoroValueLike which can be used in most
@@ -155,9 +155,9 @@ func AsValue(v any) (LoroValueLike, error) {
 	case int64:
 		return AsInt64Value(v), nil
 	case []any:
-		return AsListValueFromVecOfAny(v)
+		return AsListValueFromAny(v)
 	case map[string]any:
-		return AsMapValueFromVecOfAny(v)
+		return AsMapValueFromAny(v)
 	}
 
 	return nil, fmt.Errorf("unsupported value type: %T", v)
@@ -351,27 +351,27 @@ func GetAnyValue(v **ValueOrContainer) (any, bool) {
 	}
 
 	if loroCounter := v0.AsLoroCounter(); loroCounter != nil {
-		return loroCounter, true
+		return *loroCounter, true
 	}
 
 	if loroMap := v0.AsLoroMap(); loroMap != nil {
-		return loroMap, true
+		return *loroMap, true
 	}
 
 	if loroList := v0.AsLoroList(); loroList != nil {
-		return loroList, true
+		return *loroList, true
 	}
 
 	if loroMovableList := v0.AsLoroMovableList(); loroMovableList != nil {
-		return loroMovableList, true
+		return *loroMovableList, true
 	}
 
 	if loroText := v0.AsLoroText(); loroText != nil {
-		return loroText, true
+		return *loroText, true
 	}
 
 	if loroTree := v0.AsLoroTree(); loroTree != nil {
-		return loroTree, true
+		return *loroTree, true
 	}
 
 	return nil, false
