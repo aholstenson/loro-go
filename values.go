@@ -341,8 +341,12 @@ func GetMapValueOfAny(v **ValueOrContainer) (map[string]any, bool) {
 // as an any.
 func GetAnyValue(v **ValueOrContainer) (any, bool) {
 	value, ok := GetValue(v)
-	if ok {
-		return GetBasicValueAsAny(value)
+	if !ok {
+		return nil, false
+	}
+
+	if value, ok := GetBasicValueAsAny(value); ok {
+		return value, true
 	}
 
 	v0 := *v
