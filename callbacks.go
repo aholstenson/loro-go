@@ -57,3 +57,27 @@ func (fn ChangeAncestorsTravelerFn) Travel(payload ChangeMeta) bool {
 func AsChangeAncestorCallback(fn ChangeAncestorsTravelerFn) ChangeAncestorsTraveler {
 	return fn
 }
+
+// LocalEphemeralListenerFn adapts a function to the LocalEphemeralListener interface.
+type LocalEphemeralListenerFn func(update []byte)
+
+func (fn LocalEphemeralListenerFn) OnEphemeralUpdate(update []byte) {
+	fn(update)
+}
+
+// AsLocalEphemeralListener adapts a function to the LocalEphemeralListener interface.
+func AsLocalEphemeralListener(fn LocalEphemeralListenerFn) LocalEphemeralListener {
+	return fn
+}
+
+// EphemeralSubscriberFn adapts a function to the EphemeralSubscriber interface.
+type EphemeralSubscriberFn func(event EphemeralStoreEvent)
+
+func (fn EphemeralSubscriberFn) OnEphemeralEvent(event EphemeralStoreEvent) {
+	fn(event)
+}
+
+// AsEphemeralSubscriber adapts a function to the EphemeralSubscriber interface.
+func AsEphemeralSubscriber(fn EphemeralSubscriberFn) EphemeralSubscriber {
+	return fn
+}
