@@ -786,7 +786,7 @@ dependencies = [
 
 [[package]]
 name = "loro-go"
-version = "1.5.0"
+version = "1.5.8"
 dependencies = [
  "loro-ffi",
  "uniffi",
