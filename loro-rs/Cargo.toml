@@ -5,7 +5,7 @@ edition = "2021"
 
 [lib]
 name = "loro"
-crate-type = ["cdylib", "staticlib"]
+crate-type = ["staticlib"]
 
 [[bin]]
 name = "uniffi-bindgen-go"
@@ -21,3 +21,9 @@ uniffi = { version = "0.28.3", features = ["build"] }
 
 [features]
 cli = ["uniffi/cli"]
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
