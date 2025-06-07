@@ -910,6 +910,15 @@ func uniffiCheckChecksums() {
 	}
 	{
 		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
+			return C.uniffi_loro_checksum_method_lorodoc_delete_root_container()
+		})
+		if checksum != 40125 {
+			// If this happens try cleaning and rebuilding your project
+			panic("loro: uniffi_loro_checksum_method_lorodoc_delete_root_container: UniFFI API checksum mismatch")
+		}
+	}
+	{
+		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
 			return C.uniffi_loro_checksum_method_lorodoc_detach()
 		})
 		if checksum != 61399 {
@@ -1365,6 +1374,15 @@ func uniffiCheckChecksums() {
 		if checksum != 55133 {
 			// If this happens try cleaning and rebuilding your project
 			panic("loro: uniffi_loro_checksum_method_lorodoc_set_change_merge_interval: UniFFI API checksum mismatch")
+		}
+	}
+	{
+		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
+			return C.uniffi_loro_checksum_method_lorodoc_set_hide_empty_root_containers()
+		})
+		if checksum != 34137 {
+			// If this happens try cleaning and rebuilding your project
+			panic("loro: uniffi_loro_checksum_method_lorodoc_set_hide_empty_root_containers: UniFFI API checksum mismatch")
 		}
 	}
 	{
@@ -5509,6 +5527,14 @@ type LoroDocInterface interface {
 	// Expand is used to specify the behavior of expanding when new text is inserted at the
 	// beginning or end of the style.
 	ConfigTextStyle(textStyle *StyleConfigMap)
+	// Delete all content from a root container and hide it from the document.
+	//
+	// When a root container is empty and hidden:
+	// - It won't show up in `get_deep_value()` results
+	// - It won't be included in document snapshots
+	//
+	// Only works on root containers (containers without parents).
+	DeleteRootContainer(cid ContainerId)
 	// Force the document enter the detached mode.
 	//
 	// In this mode, when you importing new updates, the [loro_internal::DocState] will not be changed.
@@ -5762,6 +5788,8 @@ type LoroDocInterface interface {
 	// By default, we record timestamps in seconds for each change. So if the merge interval is 1, and changes A and B
 	// have timestamps of 3 and 4 respectively, then they will be merged into one change
 	SetChangeMergeInterval(interval int64)
+	// Set whether to hide empty root containers.
+	SetHideEmptyRootContainers(hide bool)
 	// Set commit message for the current uncommitted changes
 	//
 	// It will be persisted.
@@ -6052,6 +6080,23 @@ func (_self *LoroDoc) ConfigTextStyle(textStyle *StyleConfigMap) {
 	rustCall(func(_uniffiStatus *C.RustCallStatus) bool {
 		C.uniffi_loro_fn_method_lorodoc_config_text_style(
 			_pointer, FfiConverterStyleConfigMapINSTANCE.Lower(textStyle), _uniffiStatus)
+		return false
+	})
+}
+
+// Delete all content from a root container and hide it from the document.
+//
+// When a root container is empty and hidden:
+// - It won't show up in `get_deep_value()` results
+// - It won't be included in document snapshots
+//
+// Only works on root containers (containers without parents).
+func (_self *LoroDoc) DeleteRootContainer(cid ContainerId) {
+	_pointer := _self.ffiObject.incrementPointer("*LoroDoc")
+	defer _self.ffiObject.decrementPointer()
+	rustCall(func(_uniffiStatus *C.RustCallStatus) bool {
+		C.uniffi_loro_fn_method_lorodoc_delete_root_container(
+			_pointer, FfiConverterContainerIdINSTANCE.Lower(cid), _uniffiStatus)
 		return false
 	})
 }
@@ -6850,6 +6895,17 @@ func (_self *LoroDoc) SetChangeMergeInterval(interval int64) {
 	rustCall(func(_uniffiStatus *C.RustCallStatus) bool {
 		C.uniffi_loro_fn_method_lorodoc_set_change_merge_interval(
 			_pointer, FfiConverterInt64INSTANCE.Lower(interval), _uniffiStatus)
+		return false
+	})
+}
+
+// Set whether to hide empty root containers.
+func (_self *LoroDoc) SetHideEmptyRootContainers(hide bool) {
+	_pointer := _self.ffiObject.incrementPointer("*LoroDoc")
+	defer _self.ffiObject.decrementPointer()
+	rustCall(func(_uniffiStatus *C.RustCallStatus) bool {
+		C.uniffi_loro_fn_method_lorodoc_set_hide_empty_root_containers(
+			_pointer, FfiConverterBoolINSTANCE.Lower(hide), _uniffiStatus)
 		return false
 	})
 }
@@ -13633,6 +13689,7 @@ var ErrLoroErrorContainerDeleted = fmt.Errorf("LoroErrorContainerDeleted")
 var ErrLoroErrorConcurrentOpsWithSamePeerId = fmt.Errorf("LoroErrorConcurrentOpsWithSamePeerId")
 var ErrLoroErrorInvalidPeerId = fmt.Errorf("LoroErrorInvalidPeerId")
 var ErrLoroErrorContainersNotFound = fmt.Errorf("LoroErrorContainersNotFound")
+var ErrLoroErrorUndoGroupAlreadyStarted = fmt.Errorf("LoroErrorUndoGroupAlreadyStarted")
 
 // Variant structs
 type LoroErrorUnmatchedContext struct {
@@ -14338,6 +14395,25 @@ func (self LoroErrorContainersNotFound) Is(target error) bool {
 	return target == ErrLoroErrorContainersNotFound
 }
 
+type LoroErrorUndoGroupAlreadyStarted struct {
+	message string
+}
+
+func NewLoroErrorUndoGroupAlreadyStarted() *LoroError {
+	return &LoroError{err: &LoroErrorUndoGroupAlreadyStarted{}}
+}
+
+func (e LoroErrorUndoGroupAlreadyStarted) destroy() {
+}
+
+func (err LoroErrorUndoGroupAlreadyStarted) Error() string {
+	return fmt.Sprintf("UndoGroupAlreadyStarted: %s", err.message)
+}
+
+func (self LoroErrorUndoGroupAlreadyStarted) Is(target error) bool {
+	return target == ErrLoroErrorUndoGroupAlreadyStarted
+}
+
 type FfiConverterLoroError struct{}
 
 var FfiConverterLoroErrorINSTANCE = FfiConverterLoroError{}
@@ -14429,6 +14505,8 @@ func (c FfiConverterLoroError) Read(reader io.Reader) *LoroError {
 		return &LoroError{&LoroErrorInvalidPeerId{message}}
 	case 37:
 		return &LoroError{&LoroErrorContainersNotFound{message}}
+	case 38:
+		return &LoroError{&LoroErrorUndoGroupAlreadyStarted{message}}
 	default:
 		panic(fmt.Sprintf("Unknown error code %d in FfiConverterLoroError.Read()", errorID))
 	}
@@ -14511,6 +14589,8 @@ func (c FfiConverterLoroError) Write(writer io.Writer, value *LoroError) {
 		writeInt32(writer, 36)
 	case *LoroErrorContainersNotFound:
 		writeInt32(writer, 37)
+	case *LoroErrorUndoGroupAlreadyStarted:
+		writeInt32(writer, 38)
 	default:
 		_ = variantValue
 		panic(fmt.Sprintf("invalid error value `%v` in FfiConverterLoroError.Write", value))
@@ -14594,6 +14674,8 @@ func (_ FfiDestroyerLoroError) Destroy(value *LoroError) {
 	case LoroErrorInvalidPeerId:
 		variantValue.destroy()
 	case LoroErrorContainersNotFound:
+		variantValue.destroy()
+	case LoroErrorUndoGroupAlreadyStarted:
 		variantValue.destroy()
 	default:
 		_ = variantValue

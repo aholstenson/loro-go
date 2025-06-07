@@ -12,7 +12,7 @@ name = "uniffi-bindgen-go"
 path = "src/uniffi-bindgen-go.rs"
 
 [dependencies]
-loro-ffi = { git = "https://github.com/loro-dev/loro.git", tag = "loro-ffi@1.5.0" }
+loro-ffi = { git = "https://github.com/loro-dev/loro.git", tag = "loro-ffi-v1.5.8" }
 uniffi = { version = "0.28.3" }
 uniffi-bindgen-go = { git = "https://github.com/NordSecurity/uniffi-bindgen-go.git", tag = "v0.4.0+v0.28.3" }
 

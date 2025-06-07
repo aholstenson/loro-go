@@ -1378,6 +1378,11 @@ void uniffi_loro_fn_method_lorodoc_config_default_text_style(void* ptr, RustBuff
 void uniffi_loro_fn_method_lorodoc_config_text_style(void* ptr, void* text_style, RustCallStatus *out_status
 );
 #endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_LORO_FN_METHOD_LORODOC_DELETE_ROOT_CONTAINER
+#define UNIFFI_FFIDEF_UNIFFI_LORO_FN_METHOD_LORODOC_DELETE_ROOT_CONTAINER
+void uniffi_loro_fn_method_lorodoc_delete_root_container(void* ptr, RustBuffer cid, RustCallStatus *out_status
+);
+#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_LORO_FN_METHOD_LORODOC_DETACH
 #define UNIFFI_FFIDEF_UNIFFI_LORO_FN_METHOD_LORODOC_DETACH
 void uniffi_loro_fn_method_lorodoc_detach(void* ptr, RustCallStatus *out_status
@@ -1631,6 +1636,11 @@ void uniffi_loro_fn_method_lorodoc_revert_to(void* ptr, void* version, RustCallS
 #ifndef UNIFFI_FFIDEF_UNIFFI_LORO_FN_METHOD_LORODOC_SET_CHANGE_MERGE_INTERVAL
 #define UNIFFI_FFIDEF_UNIFFI_LORO_FN_METHOD_LORODOC_SET_CHANGE_MERGE_INTERVAL
 void uniffi_loro_fn_method_lorodoc_set_change_merge_interval(void* ptr, int64_t interval, RustCallStatus *out_status
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_LORO_FN_METHOD_LORODOC_SET_HIDE_EMPTY_ROOT_CONTAINERS
+#define UNIFFI_FFIDEF_UNIFFI_LORO_FN_METHOD_LORODOC_SET_HIDE_EMPTY_ROOT_CONTAINERS
+void uniffi_loro_fn_method_lorodoc_set_hide_empty_root_containers(void* ptr, int8_t hide, RustCallStatus *out_status
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_LORO_FN_METHOD_LORODOC_SET_NEXT_COMMIT_MESSAGE
@@ -3553,6 +3563,12 @@ uint16_t uniffi_loro_checksum_method_lorodoc_config_text_style(void
     
 );
 #endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_LORO_CHECKSUM_METHOD_LORODOC_DELETE_ROOT_CONTAINER
+#define UNIFFI_FFIDEF_UNIFFI_LORO_CHECKSUM_METHOD_LORODOC_DELETE_ROOT_CONTAINER
+uint16_t uniffi_loro_checksum_method_lorodoc_delete_root_container(void
+    
+);
+#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_LORO_CHECKSUM_METHOD_LORODOC_DETACH
 #define UNIFFI_FFIDEF_UNIFFI_LORO_CHECKSUM_METHOD_LORODOC_DETACH
 uint16_t uniffi_loro_checksum_method_lorodoc_detach(void
@@ -3856,6 +3872,12 @@ uint16_t uniffi_loro_checksum_method_lorodoc_revert_to(void
 #ifndef UNIFFI_FFIDEF_UNIFFI_LORO_CHECKSUM_METHOD_LORODOC_SET_CHANGE_MERGE_INTERVAL
 #define UNIFFI_FFIDEF_UNIFFI_LORO_CHECKSUM_METHOD_LORODOC_SET_CHANGE_MERGE_INTERVAL
 uint16_t uniffi_loro_checksum_method_lorodoc_set_change_merge_interval(void
+    
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_LORO_CHECKSUM_METHOD_LORODOC_SET_HIDE_EMPTY_ROOT_CONTAINERS
+#define UNIFFI_FFIDEF_UNIFFI_LORO_CHECKSUM_METHOD_LORODOC_SET_HIDE_EMPTY_ROOT_CONTAINERS
+uint16_t uniffi_loro_checksum_method_lorodoc_set_hide_empty_root_containers(void
     
 );
 #endif
