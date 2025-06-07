@@ -10,6 +10,12 @@ This repository contains [Loro CRDT](https://github.com/loro-dev/loro) bindings 
 go get github.com/aholstenson/loro-go
 ```
 
+When building your binary you will likely want statically linking to avoid a dependency on libgcc:
+
+```console
+go build -ldflags '-linkmode external -extldflags "-static"'
+```
+
 ## Examples
 
 ### Getting started
