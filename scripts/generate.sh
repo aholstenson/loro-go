@@ -1,9 +1,4 @@
 #!/usr/bin/env bash
-
-# This script was cribbed from https://github.com/automerge/automerge-swift/blob/main/scripts/build-xcframework.sh
-# which was cribbed from https://github.com/y-crdt/y-uniffi/blob/7cd55266c11c424afa3ae5b3edae6e9f70d9a6bb/lib/build-xcframework.sh
-# which was written by Joseph Heck and  Aidar Nugmanoff and licensed under the MIT license.
-
 set -euxo pipefail
 THIS_SCRIPT_DIR="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 LIB_NAME="libloro.a"
@@ -13,11 +8,42 @@ GO_FOLDER="$THIS_SCRIPT_DIR/../"
 
 TARGETS="x86_64-unknown-linux-musl aarch64-unknown-linux-musl aarch64-apple-darwin x86_64-apple-darwin"
 
+# Function to check if we're on the right platform for native compilation
+can_build_natively() {
+    local target="$1"
+    local current_arch=$(uname -m)
+    local current_os=$(uname -s)
+    
+    case "$target" in
+        "x86_64-apple-darwin")
+            [[ "$current_os" == "Darwin" ]]
+            ;;
+        "aarch64-apple-darwin")
+            [[ "$current_os" == "Darwin" ]]
+            ;;
+        "x86_64-unknown-linux-musl")
+            [[ "$current_os" == "Linux" && "$current_arch" == "x86_64" ]]
+            ;;
+        "aarch64-unknown-linux-musl")
+            [[ "$current_os" == "Linux" && "$current_arch" == "aarch64" ]]
+            ;;
+        *)
+            false
+            ;;
+    esac
+}
+
 echo "▸ Install toolchains"
 for TARGET in $TARGETS; do
-    rustup target add $TARGET
+	if can_build_natively "$TARGET"; then
+		rustup target add $TARGET
+	fi
 done
-cargo_build="cargo build --manifest-path $RUST_FOLDER/Cargo.toml"
+
+if ! command -v cross &> /dev/null; then
+    echo "▸ Cross tool not found, installing"
+    cargo install cross --git https://github.com/cross-rs/cross
+fi
 
 echo "▸ Generate Go bindings"
 cd "$RUST_FOLDER"
@@ -31,7 +57,15 @@ cp -r "${RUST_FOLDER}/target/go/loro/" "${GO_FOLDER}"
 
 for TARGET in $TARGETS; do
     echo "▸ Building for $TARGET"
-    $cargo_build --target $TARGET --locked --release
+    
+    # Choose the right build tool based on target and current platform
+    if can_build_natively "$TARGET"; then
+        echo "  Using native cargo build for $TARGET"
+        cargo build --manifest-path "$RUST_FOLDER/Cargo.toml" --target "$TARGET" --locked --release
+    else
+        echo "  Using cross for $TARGET"
+        cross build --manifest-path "$RUST_FOLDER/Cargo.toml" --target "$TARGET" --locked --release
+    fi
 
 	mkdir -p "${GO_FOLDER}/libs/${TARGET}"
 	cp "${RUST_FOLDER}/target/${TARGET}/release/${LIB_NAME}" "${GO_FOLDER}/libs/${TARGET}/${LIB_NAME}"
