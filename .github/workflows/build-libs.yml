@@ -1,0 +1,160 @@
+name: Build Libraries
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "loro-go/**"
+      - "loro-ffi/**"
+      - ".github/workflows/build-libs.yml"
+  pull_request:
+    paths:
+      - "loro-go/**"
+      - "loro-ffi/**"
+      - ".github/workflows/build-libs.yml"
+
+jobs:
+  build-darwin:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        target:
+          - aarch64-apple-darwin
+          - x86_64-apple-darwin
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: loro-go
+          key: ${{ matrix.target }}
+
+      - name: Build static library
+        env:
+          RUSTFLAGS: "-C target-feature=+crt-static"
+        run: |
+          cargo build \
+            --manifest-path loro-go/Cargo.toml \
+            --target ${{ matrix.target }} \
+            --locked \
+            --release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lib-${{ matrix.target }}
+          path: loro-go/target/${{ matrix.target }}/release/libloro.a
+
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target:
+          - x86_64-unknown-linux-musl
+          - aarch64-unknown-linux-musl
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: loro-go
+          key: ${{ matrix.target }}
+
+      - name: Install cross
+        run: cargo install cross --git https://github.com/cross-rs/cross
+
+      - name: Build static library
+        env:
+          RUSTFLAGS: "-C target-feature=+crt-static"
+        run: |
+          cross build \
+            --manifest-path loro-go/Cargo.toml \
+            --target ${{ matrix.target }} \
+            --locked \
+            --release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lib-${{ matrix.target }}
+          path: loro-go/target/${{ matrix.target }}/release/libloro.a
+
+  generate-bindings:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: loro-go
+          key: bindings
+
+      - name: Generate Go bindings
+        run: |
+          cd loro-go
+          cargo run \
+            --features=cli \
+            --bin uniffi-bindgen-go \
+            ../loro-ffi/src/loro.udl \
+            --out-dir target/go
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: go-bindings
+          path: loro-go/target/go/loro/
+
+  collect:
+    if: github.event_name == 'push'
+    needs: [build-darwin, build-linux, generate-bindings]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Copy artifacts into place
+        run: |
+          for target in aarch64-apple-darwin x86_64-apple-darwin x86_64-unknown-linux-musl aarch64-unknown-linux-musl; do
+            mkdir -p libs/${target}
+            cp artifacts/lib-${target}/libloro.a libs/${target}/libloro.a
+          done
+
+          # Copy generated Go bindings to repo root
+          cp artifacts/go-bindings/*.go .
+          cp artifacts/go-bindings/*.h .
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add libs/ *.go *.h
+          git commit -m "feat: Update built libraries and bindings"
+          git push
