@@ -4,7 +4,17 @@ This repository contains [Loro CRDT](https://github.com/loro-dev/loro) bindings 
 
 ⚠️ There is currently very little extra plumbing to make the bindings easier to use. I'm updating it as I need it.
 
-Current Loro version: 1.8.1
+Current Loro version: 1.10.3
+
+## Updating the Loro version
+
+```console
+./scripts/updateLoro.sh 1.x.x
+```
+
+You can get the version number from the [loro-ffi tags](https://github.com/loro-dev/loro-ffi/tags) page.
+
+This updates the `loro-ffi` submodule, `loro-go/Cargo.toml`, and the lockfile. Open a PR with the changes and CI will build the libraries and commit them after merge.
 
 ## Usage
 

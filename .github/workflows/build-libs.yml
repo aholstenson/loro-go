@@ -150,11 +150,17 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Update README version
+        run: |
+          VERSION=$(grep '^version' loro-go/Cargo.toml | head -1 | sed 's/.*"\(.*\)"/\1/')
+          sed -i "s/Current Loro version: .*/Current Loro version: ${VERSION}/" README.md
+
       - name: Commit and push
         if: steps.changes.outputs.changed == 'true'
         run: |
+          VERSION=$(grep '^version' loro-go/Cargo.toml | head -1 | sed 's/.*"\(.*\)"/\1/')
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add libs/ *.go *.h
-          git commit -m "feat: Update built libraries and bindings"
+          git add libs/ *.go *.h README.md
+          git commit -m "feat: Update built libraries and bindings for Loro v${VERSION}"
           git push
