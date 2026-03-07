@@ -117,9 +117,52 @@ jobs:
           name: go-bindings
           path: loro-go/target/go/loro/
 
+  smoke-test:
+    needs: [build-darwin, build-linux, generate-bindings]
+    strategy:
+      matrix:
+        include:
+          - runner: macos-15
+            target: aarch64-apple-darwin
+          - runner: macos-15-intel
+            target: x86_64-apple-darwin
+          - runner: ubuntu-24.04
+            target: x86_64-unknown-linux-musl
+          - runner: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-musl
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: lib-${{ matrix.target }}
+          path: artifacts/lib
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: go-bindings
+          path: artifacts/go-bindings
+
+      - name: Place artifacts
+        run: |
+          mkdir -p libs/${{ matrix.target }}
+          cp artifacts/lib/libloro.a libs/${{ matrix.target }}/libloro.a
+          cp artifacts/go-bindings/*.go .
+          cp artifacts/go-bindings/*.h .
+
+      - name: Build and run smoke test
+        run: |
+          go build -o smoke-test ./examples/simple
+          ./smoke-test
+
   collect:
     if: github.event_name == 'push'
-    needs: [build-darwin, build-linux, generate-bindings]
+    needs: [build-darwin, build-linux, generate-bindings, smoke-test]
     runs-on: ubuntu-latest
     permissions:
       contents: write
