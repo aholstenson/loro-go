@@ -35,7 +35,7 @@ go build -ldflags '-linkmode external -extldflags "-static"'
 ```go
 doc := loro.NewLoroDoc()
 
-loroMap := doc.GetMap(loro.AsContainerID("test"))
+loroMap := doc.GetMap(loro.AsContainerId("test"))
 loroMap.Insert("test", loro.AsStringValue("test"))
 ```
 
