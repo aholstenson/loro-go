@@ -8,6 +8,8 @@ Current Loro version: 1.11.2
 
 ## Updating the Loro version
 
+Ensure you use `--recursive` when you `git clone` this repository to pull in the [`loro-ffi`](https://github.com/loro-dev/loro-ffi) submodule.
+
 ```console
 ./scripts/updateLoro.sh 1.x.x
 ```
