@@ -1924,6 +1924,60 @@ func uniffiCheckChecksums() {
 	}
 	{
 		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
+			return C.uniffi_loro_ffi_checksum_method_loromap_ensure_mergeable_counter()
+		})
+		if checksum != 45050 {
+			// If this happens try cleaning and rebuilding your project
+			panic("loro: uniffi_loro_ffi_checksum_method_loromap_ensure_mergeable_counter: UniFFI API checksum mismatch")
+		}
+	}
+	{
+		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
+			return C.uniffi_loro_ffi_checksum_method_loromap_ensure_mergeable_list()
+		})
+		if checksum != 52705 {
+			// If this happens try cleaning and rebuilding your project
+			panic("loro: uniffi_loro_ffi_checksum_method_loromap_ensure_mergeable_list: UniFFI API checksum mismatch")
+		}
+	}
+	{
+		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
+			return C.uniffi_loro_ffi_checksum_method_loromap_ensure_mergeable_map()
+		})
+		if checksum != 9978 {
+			// If this happens try cleaning and rebuilding your project
+			panic("loro: uniffi_loro_ffi_checksum_method_loromap_ensure_mergeable_map: UniFFI API checksum mismatch")
+		}
+	}
+	{
+		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
+			return C.uniffi_loro_ffi_checksum_method_loromap_ensure_mergeable_movable_list()
+		})
+		if checksum != 54435 {
+			// If this happens try cleaning and rebuilding your project
+			panic("loro: uniffi_loro_ffi_checksum_method_loromap_ensure_mergeable_movable_list: UniFFI API checksum mismatch")
+		}
+	}
+	{
+		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
+			return C.uniffi_loro_ffi_checksum_method_loromap_ensure_mergeable_text()
+		})
+		if checksum != 48183 {
+			// If this happens try cleaning and rebuilding your project
+			panic("loro: uniffi_loro_ffi_checksum_method_loromap_ensure_mergeable_text: UniFFI API checksum mismatch")
+		}
+	}
+	{
+		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
+			return C.uniffi_loro_ffi_checksum_method_loromap_ensure_mergeable_tree()
+		})
+		if checksum != 32019 {
+			// If this happens try cleaning and rebuilding your project
+			panic("loro: uniffi_loro_ffi_checksum_method_loromap_ensure_mergeable_tree: UniFFI API checksum mismatch")
+		}
+	}
+	{
+		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
 			return C.uniffi_loro_ffi_checksum_method_loromap_get()
 		})
 		if checksum != 28557 {
@@ -8826,6 +8880,12 @@ type LoroMapInterface interface {
 	Delete(key string) error
 	// Get the LoroDoc from this container
 	Doc() **LoroDoc
+	EnsureMergeableCounter(key string) (*LoroCounter, error)
+	EnsureMergeableList(key string) (*LoroList, error)
+	EnsureMergeableMap(key string) (*LoroMap, error)
+	EnsureMergeableMovableList(key string) (*LoroMovableList, error)
+	EnsureMergeableText(key string) (*LoroText, error)
+	EnsureMergeableTree(key string) (*LoroTree, error)
 	// Get the value of the map with the given key.
 	Get(key string) **ValueOrContainer
 	// If a detached container is attached, this method will return its corresponding attached handler.
@@ -8932,6 +8992,96 @@ func (_self *LoroMap) Doc() **LoroDoc {
 				_pointer, _uniffiStatus),
 		}
 	}))
+}
+
+func (_self *LoroMap) EnsureMergeableCounter(key string) (*LoroCounter, error) {
+	_pointer := _self.ffiObject.incrementPointer("*LoroMap")
+	defer _self.ffiObject.decrementPointer()
+	_uniffiRV, _uniffiErr := rustCallWithError[*LoroError](FfiConverterLoroError{}, func(_uniffiStatus *C.RustCallStatus) C.uint64_t {
+		return C.uniffi_loro_ffi_fn_method_loromap_ensure_mergeable_counter(
+			_pointer, FfiConverterStringINSTANCE.Lower(key), _uniffiStatus)
+	})
+	if _uniffiErr != nil {
+		var _uniffiDefaultValue *LoroCounter
+		return _uniffiDefaultValue, _uniffiErr
+	} else {
+		return FfiConverterLoroCounterINSTANCE.Lift(_uniffiRV), nil
+	}
+}
+
+func (_self *LoroMap) EnsureMergeableList(key string) (*LoroList, error) {
+	_pointer := _self.ffiObject.incrementPointer("*LoroMap")
+	defer _self.ffiObject.decrementPointer()
+	_uniffiRV, _uniffiErr := rustCallWithError[*LoroError](FfiConverterLoroError{}, func(_uniffiStatus *C.RustCallStatus) C.uint64_t {
+		return C.uniffi_loro_ffi_fn_method_loromap_ensure_mergeable_list(
+			_pointer, FfiConverterStringINSTANCE.Lower(key), _uniffiStatus)
+	})
+	if _uniffiErr != nil {
+		var _uniffiDefaultValue *LoroList
+		return _uniffiDefaultValue, _uniffiErr
+	} else {
+		return FfiConverterLoroListINSTANCE.Lift(_uniffiRV), nil
+	}
+}
+
+func (_self *LoroMap) EnsureMergeableMap(key string) (*LoroMap, error) {
+	_pointer := _self.ffiObject.incrementPointer("*LoroMap")
+	defer _self.ffiObject.decrementPointer()
+	_uniffiRV, _uniffiErr := rustCallWithError[*LoroError](FfiConverterLoroError{}, func(_uniffiStatus *C.RustCallStatus) C.uint64_t {
+		return C.uniffi_loro_ffi_fn_method_loromap_ensure_mergeable_map(
+			_pointer, FfiConverterStringINSTANCE.Lower(key), _uniffiStatus)
+	})
+	if _uniffiErr != nil {
+		var _uniffiDefaultValue *LoroMap
+		return _uniffiDefaultValue, _uniffiErr
+	} else {
+		return FfiConverterLoroMapINSTANCE.Lift(_uniffiRV), nil
+	}
+}
+
+func (_self *LoroMap) EnsureMergeableMovableList(key string) (*LoroMovableList, error) {
+	_pointer := _self.ffiObject.incrementPointer("*LoroMap")
+	defer _self.ffiObject.decrementPointer()
+	_uniffiRV, _uniffiErr := rustCallWithError[*LoroError](FfiConverterLoroError{}, func(_uniffiStatus *C.RustCallStatus) C.uint64_t {
+		return C.uniffi_loro_ffi_fn_method_loromap_ensure_mergeable_movable_list(
+			_pointer, FfiConverterStringINSTANCE.Lower(key), _uniffiStatus)
+	})
+	if _uniffiErr != nil {
+		var _uniffiDefaultValue *LoroMovableList
+		return _uniffiDefaultValue, _uniffiErr
+	} else {
+		return FfiConverterLoroMovableListINSTANCE.Lift(_uniffiRV), nil
+	}
+}
+
+func (_self *LoroMap) EnsureMergeableText(key string) (*LoroText, error) {
+	_pointer := _self.ffiObject.incrementPointer("*LoroMap")
+	defer _self.ffiObject.decrementPointer()
+	_uniffiRV, _uniffiErr := rustCallWithError[*LoroError](FfiConverterLoroError{}, func(_uniffiStatus *C.RustCallStatus) C.uint64_t {
+		return C.uniffi_loro_ffi_fn_method_loromap_ensure_mergeable_text(
+			_pointer, FfiConverterStringINSTANCE.Lower(key), _uniffiStatus)
+	})
+	if _uniffiErr != nil {
+		var _uniffiDefaultValue *LoroText
+		return _uniffiDefaultValue, _uniffiErr
+	} else {
+		return FfiConverterLoroTextINSTANCE.Lift(_uniffiRV), nil
+	}
+}
+
+func (_self *LoroMap) EnsureMergeableTree(key string) (*LoroTree, error) {
+	_pointer := _self.ffiObject.incrementPointer("*LoroMap")
+	defer _self.ffiObject.decrementPointer()
+	_uniffiRV, _uniffiErr := rustCallWithError[*LoroError](FfiConverterLoroError{}, func(_uniffiStatus *C.RustCallStatus) C.uint64_t {
+		return C.uniffi_loro_ffi_fn_method_loromap_ensure_mergeable_tree(
+			_pointer, FfiConverterStringINSTANCE.Lower(key), _uniffiStatus)
+	})
+	if _uniffiErr != nil {
+		var _uniffiDefaultValue *LoroTree
+		return _uniffiDefaultValue, _uniffiErr
+	} else {
+		return FfiConverterLoroTreeINSTANCE.Lift(_uniffiRV), nil
+	}
 }
 
 // Get the value of the map with the given key.
