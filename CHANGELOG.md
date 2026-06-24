@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.0](https://github.com/aholstenson/loro-go/compare/v0.4.0...v0.5.0) (2026-06-24)
+
+
+### Features
+
+* Add helpers for LoroText ([8c718c7](https://github.com/aholstenson/loro-go/commit/8c718c7f97380b0475c750dc96b2259835b3daa8))
+* Bump Loro to 1.13.6 ([75564a5](https://github.com/aholstenson/loro-go/commit/75564a5c9cf310774ee94fd1cd1e4506a3d79bb0))
+* Update built libraries and bindings for Loro v1.13.6 ([08fed63](https://github.com/aholstenson/loro-go/commit/08fed6320faedfeea876d55a69146424fd75a6db))
+
 ## [0.4.0](https://github.com/aholstenson/loro-go/compare/v0.3.0...v0.4.0) (2026-05-14)
 
 
