@@ -19,13 +19,20 @@ git checkout "v${VERSION}"
 # Update Cargo.toml
 echo "Updating loro-go/Cargo.toml..."
 cd "$REPO_ROOT"
-sed -i.bak "s/^version = \".*\"/version = \"${VERSION}\"/" loro-go/Cargo.toml
-sed -i.bak "s/^\(loro-ffi = .*tag = \"\)v[^\"]*\(\".*\)$/\1v${VERSION}\2/" loro-go/Cargo.toml
+sed -i '' "s/^version = \".*\"/version = \"${VERSION}\"/" loro-go/Cargo.toml
+sed -i '' "s/^\(loro-ffi = .*tag = \"\)v[^\"]*\(\".*\)$/\1v${VERSION}\2/" loro-go/Cargo.toml
 if ! grep -q "loro-ffi = .*tag = \"v${VERSION}\"" loro-go/Cargo.toml; then
 	echo "ERROR: failed to update loro-ffi tag to v${VERSION} in loro-go/Cargo.toml" >&2
 	exit 1
 fi
-rm -f loro-go/Cargo.toml.bak
+
+# Update README
+echo "Updating README.md..."
+sed -i '' "s/^Current Loro version: .*/Current Loro version: ${VERSION}/" README.md
+if ! grep -q "^Current Loro version: ${VERSION}$" README.md; then
+	echo "ERROR: failed to update Loro version to ${VERSION} in README.md" >&2
+	exit 1
+fi
 
 # Verify our uniffi pin matches loro-ffi's. Drift here causes uniffi-bindgen-go
 # to silently produce no output (exit 0, no files) — see commit history.
