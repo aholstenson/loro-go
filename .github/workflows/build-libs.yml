@@ -48,6 +48,14 @@ jobs:
             --locked \
             --release
 
+      # Go 1.27.4 refuses LTO IR in cgo linker inputs. The Rust stdlib is
+      # precompiled with fat LTO, so every archive carries an __LLVM segment
+      # regardless of this crate's profile settings; stripping it here is the
+      # only place it can be done. The script verifies the exported C API is
+      # unchanged and fails if any LTO section survives.
+      - name: Strip LLVM bitcode
+        run: tools/strip-lto.sh loro-go/target/${{ matrix.target }}/release/libloro.a
+
       - uses: actions/upload-artifact@v4
         with:
           name: lib-${{ matrix.target }}
@@ -88,6 +96,9 @@ jobs:
             --lib \
             --locked \
             --release
+
+      - name: Strip LLVM bitcode
+        run: tools/strip-lto.sh loro-go/target/${{ matrix.target }}/release/libloro.a
 
       - uses: actions/upload-artifact@v4
         with:
@@ -130,6 +141,9 @@ jobs:
             --release 2>&1 | tee build.log
           echo "---- native-static-libs needed by libs.go cgo LDFLAGS ----"
           grep "native-static-libs:" build.log || true
+
+      - name: Strip LLVM bitcode
+        run: tools/strip-lto.sh loro-go/target/${{ matrix.target }}/release/libloro.a
 
       - uses: actions/upload-artifact@v4
         with:
