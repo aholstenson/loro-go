@@ -31,3 +31,26 @@ jobs:
 
       - name: Test
         run: go test -race ./...
+
+      # Go 1.27.4 hardened the cgo linker: it refuses to pass a library whose
+      # members carry LTO IR. That is why tools/strip-lto.sh exists, and why
+      # this lane has to run on a toolchain new enough to enforce it — the 1.24
+      # above cannot see the problem at all, so a regression in the build
+      # workflow would pass CI and only break consumers.
+      #
+      # golang.org/dl rather than a second actions/setup-go: it is the
+      # documented way to add a specific patch release beside the default
+      # toolchain, and it does not replace `go` on PATH for the steps above.
+      - name: Install Go 1.27.4
+        if: runner.os != 'Windows'
+        run: |
+          go install golang.org/dl/go1.27.4@latest
+          "$(go env GOPATH)/bin/go1.27.4" download
+
+      - name: Link the shipped archives with Go >= 1.27.4
+        if: runner.os != 'Windows'
+        run: |
+          GO127="$(go env GOPATH)/bin/go1.27.4"
+          "$GO127" build ./...
+          "$GO127" vet ./...
+          "$GO127" test -count=1 ./...
